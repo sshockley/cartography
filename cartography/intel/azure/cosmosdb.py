@@ -24,6 +24,7 @@ def get_client(credentials: Credentials, subscription_id: str) -> CosmosDBManage
     """
     Getting the CosmosDB client
     """
+    logging.getLogger('azure.identity').setLevel(logging.WARNING)
     client = CosmosDBManagementClient(credentials, subscription_id)
     return client
 

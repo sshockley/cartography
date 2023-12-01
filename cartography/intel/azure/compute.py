@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_client(credentials: Credentials, subscription_id: str) -> ComputeManagementClient:
+    logging.getLogger('azure.identity').setLevel(logging.WARNING)
     client = ComputeManagementClient(credentials, subscription_id)
     return client
 

@@ -26,6 +26,7 @@ def get_client(credentials: Credentials, subscription_id: str) -> SqlManagementC
     """
     Getting the Azure SQL client
     """
+    logging.getLogger('azure.identity').setLevel(logging.WARNING)
     client = SqlManagementClient(credentials, subscription_id)
     return client
 
