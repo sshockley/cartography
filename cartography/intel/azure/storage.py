@@ -23,6 +23,7 @@ def get_client(credentials: Credentials, subscription_id: str) -> StorageManagem
     """
     Getting the Azure Storage client
     """
+    logging.getLogger('azure.identity').setLevel(logging.WARNING)
     client = StorageManagementClient(credentials, subscription_id)
     return client
 
