@@ -46,6 +46,7 @@ def _sync_multiple_subscriptions(
     subscription.sync(neo4j_session, tenant_id, subscriptions, update_tag, common_job_parameters)
 
     for sub in subscriptions:
+        #if sub['subscriptionId'] == "05f07c6f-cda7-4e6d-a2c4-533fa96403cf":
         logger.info("Syncing Azure Subscription with ID '%s'", sub['subscriptionId'])
         common_job_parameters['AZURE_SUBSCRIPTION_ID'] = sub['subscriptionId']
 

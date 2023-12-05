@@ -64,6 +64,10 @@ def load_vms(neo4j_session: neo4j.Session, subscription_id: str, vm_list: List[D
 
     for vm in vm_list:
         if vm.get('storage_profile', {}).get('data_disks'):
+            # for disk in vm['storage_profile']['data_disks']:
+            #     logger.warning(f'disk: {disk}')
+            #     if not hasattr(disk, "managed_disk.id"):
+            #         disk['id'] = disk['vhd']
             load_vm_data_disks(neo4j_session, vm['id'], vm['storage_profile']['data_disks'], update_tag)
 
 
@@ -83,14 +87,17 @@ def load_vm_data_disks(neo4j_session: neo4j.Session, vm_id: str, data_disks: Lis
     ON CREATE SET r.firstseen = timestamp()
     SET r.lastupdated = $update_tag
     """
-
-    # for disk in data_disks:
-    neo4j_session.run(
-        ingest_data_disk,
-        disks=data_disks,
-        VM_ID=vm_id,
-        update_tag=update_tag,
-    )
+    #logger.warning(f'data_disks: {data_disks}')
+    for disk in data_disks:
+        try:
+            neo4j_session.run(
+                ingest_data_disk,
+                disks=disk,
+                VM_ID=vm_id,
+                update_tag=update_tag,
+            )
+        except:
+            logger.warning(f'disk: {disk}')
 
 
 def cleanup_virtual_machine(neo4j_session: neo4j.Session, common_job_parameters: Dict) -> None:
@@ -105,6 +112,7 @@ def get_disks(credentials: Credentials, subscription_id: str) -> List[Dict]:
         for disk in disk_list:
             x = disk['id'].split('/')
             disk['resource_group'] = x[x.index('resourceGroups') + 1]
+            logger.warning(f'disk: {disk}')
 
         return disk_list
 
