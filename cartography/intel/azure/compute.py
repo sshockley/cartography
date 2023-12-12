@@ -27,6 +27,7 @@ def get_vm_list(credentials: Credentials, subscription_id: str) -> List[Dict]:
         for vm in vm_list:
             x = vm['id'].split('/')
             vm['resource_group'] = x[x.index('resourceGroups') + 1]
+            vm['resource_group_id'] = f'/subscriptions/{subscription_id}/resourceGroups/{vm['resource_group']}'
 
         return vm_list
 
@@ -39,28 +40,37 @@ def load_vms(neo4j_session: neo4j.Session, subscription_id: str, vm_list: List[D
     ingest_vm = """
     UNWIND $vms AS vm
     MERGE (v:AzureVirtualMachine{id: vm.id})
-    ON CREATE SET v.firstseen = timestamp(),
-    v.type = vm.type, v.location = vm.location,
-    v.resourcegroup = vm.resource_group
-    SET v.lastupdated = $update_tag, v.name = vm.name,
-    v.plan = vm.plan.product, v.size = vm.hardware_profile.vm_size,
-    v.license_type=vm.license_type, v.computer_name=vm.os_profile.computer_ame,
-    v.identity_type=vm.identity.type, v.zones=vm.zones,
-    v.ultra_ssd_enabled=vm.additional_capabilities.ultra_ssd_enabled,
-    v.priority=vm.priority, v.eviction_policy=vm.eviction_policy
+    ON CREATE SET 
+        v.firstseen = timestamp(),
+        v.type = vm.type, 
+        v.location = vm.location,
+        v.resourcegroup = vm.resource_group,
+        v.resource_group_id = vm.resource_group_id
+    SET 
+        v.lastupdated = $update_tag, 
+        v.name = vm.name,
+        v.plan = vm.plan.product, 
+        v.size = vm.hardware_profile.vm_size,
+        v.license_type=vm.license_type, 
+        v.computer_name=vm.os_profile.computer_ame,
+        v.identity_type=vm.identity.type, 
+        v.zones=vm.zones,
+        v.ultra_ssd_enabled=vm.additional_capabilities.ultra_ssd_enabled,
+        v.priority=vm.priority, 
+        v.eviction_policy=vm.eviction_policy
     WITH v
-    MATCH (owner:AzureSubscription{id: $SUBSCRIPTION_ID})
-    MERGE (owner)-[r:RESOURCE]->(v)
-    ON CREATE SET r.firstseen = timestamp()
-    SET r.lastupdated = $update_tag
+        MATCH (owner:AzureResourceGroup{id: $AZURE_RESOURCE_GROUP})
+            MERGE (owner)-[r:RESOURCE]->(v)
+            ON CREATE SET r.firstseen = timestamp()
+            SET r.lastupdated = $update_tag
     """
-
-    neo4j_session.run(
-        ingest_vm,
-        vms=vm_list,
-        SUBSCRIPTION_ID=subscription_id,
-        update_tag=update_tag,
-    )
+    for vm in vm_list:
+        neo4j_session.run(
+            ingest_vm,
+            vms=vm,
+            AZURE_RESOURCE_GROUP=vm['resource_group_id'],
+            update_tag=update_tag,
+        )
 
     for vm in vm_list:
         if vm.get('storage_profile', {}).get('data_disks'):

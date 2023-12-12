@@ -5,6 +5,7 @@ from typing import Optional
 
 import neo4j
 
+from . import resourcegroup
 from . import compute
 from . import cosmosdb
 from . import sql
@@ -23,6 +24,7 @@ def _sync_one_subscription(
     neo4j_session: neo4j.Session, credentials: Credentials, subscription_id: str, update_tag: int,
     common_job_parameters: Dict,
 ) -> None:
+    resourcegroup.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
     compute.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
     cosmosdb.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
     sql.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)

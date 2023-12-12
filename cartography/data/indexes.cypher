@@ -389,6 +389,8 @@ CREATE INDEX IF NOT EXISTS FOR (n:AzureRestorePoint) ON (n.id);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureRestorePoint) ON (n.lastupdated);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureTransparentDataEncryption) ON (n.id);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureTransparentDataEncryption) ON (n.lastupdated);
+CREATE INDEX IF NOT EXISTS FOR (n:AzureResourceGroup) ON (n.id);
+CREATE INDEX IF NOT EXISTS FOR (n:AzureResourceGroup) ON (n.lastupdated);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureVirtualMachine) ON (n.id);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureVirtualMachine) ON (n.lastupdated);
 CREATE INDEX IF NOT EXISTS FOR (n:AzureDataDisk) ON (n.id);
