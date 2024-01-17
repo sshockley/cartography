@@ -53,6 +53,7 @@ setup(
         "azure-cli-core>=2.26.0",
         "azure-mgmt-compute>=5.0.0",
         "azure-mgmt-resource>=10.2.0",
+        "azure-mgmt-devcenter>=1.0.0b3",
         "azure-mgmt-cosmosdb>=6.0.0",
         "msrestazure >= 0.6.4",
         "azure-mgmt-storage>=16.0.0",

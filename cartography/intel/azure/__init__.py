@@ -6,6 +6,9 @@ from typing import Optional
 import neo4j
 
 from . import resourcegroup
+from . import devcenter
+from . import devcenter_project
+from . import devcenter_project_pool
 from . import compute
 from . import cosmosdb
 from . import sql
@@ -25,10 +28,13 @@ def _sync_one_subscription(
     common_job_parameters: Dict,
 ) -> None:
     resourcegroup.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    devcenter.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    devcenter_project.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    # devcenter_project_pool.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
     compute.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
-    cosmosdb.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
-    sql.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
-    storage.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    #cosmosdb.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    #sql.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
+    #storage.sync(neo4j_session, credentials.arm_credentials, subscription_id, update_tag, common_job_parameters)
 
 
 def _sync_tenant(
